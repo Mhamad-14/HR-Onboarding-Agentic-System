@@ -16,7 +16,7 @@ The project was completed collaboratively by all team members, with no formal in
 
 * Reem Almehize
 
-* Noura Almuqbil
+* Norah Almuqbil
 
 * Moudi Alhomoud
 
