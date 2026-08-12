@@ -1,0 +1,8 @@
+course_id,title,skills,format,duration,mandatory_for
+SEC-101,Information Security Essentials,"security awareness; phishing; data handling",online,2 hours,all employees
+PRIV-110,Responsible Handling of Employee Data,"data privacy; HR data; retention",online,3 hours,HR Specialist
+ENG-201,Container Fundamentals,"Docker; containers; image security",online,6 hours,Software Engineer
+ENG-220,Testing Reliable Python Services,"Python; pytest; integration testing",hybrid,8 hours,Software Engineer
+FIN-210,Secure Financial Reporting,"financial reporting; data privacy; audit",online,5 hours,Financial Analyst
+COL-100,Working Effectively at Example Company,"communication; collaboration; onboarding",online,90 minutes,all employees
+

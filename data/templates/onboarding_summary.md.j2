@@ -1,0 +1,35 @@
+# Onboarding Proposal — {{ employee_name }}
+
+> DRAFT — Requires human approval before any consequential action.
+
+- Case: `{{ case_id }}`
+- Employee ID: `{{ employee_id }}`
+- Role: {{ role }}
+- Department: {{ department }}
+- Start date: {{ start_date }}
+- Manager: {{ manager_email }}
+- Preferred language: {{ preferred_language }}
+- Training format: {{ training_format }}
+
+## Proposed actions
+
+{% for action in proposed_actions %}
+- {{ action }}
+{% endfor %}
+
+## Risk flags
+
+{% if risk_flags %}
+{% for risk in risk_flags %}
+- {{ risk }}
+{% endfor %}
+{% else %}
+- No special risk flags were identified.
+{% endif %}
+
+## Sources
+
+{% for source in sources %}
+- {{ source }}
+{% endfor %}
+
