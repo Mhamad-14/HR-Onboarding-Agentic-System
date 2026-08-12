@@ -171,3 +171,9 @@ LangSmith tracing is enabled for the live workflow using the required LangSmith 
 configuration. The notebook validates the LangSmith credentials and observes the executed
 workflow dynamically. The captured trace evidence is used to inspect agent/tool activity and
 workflow behavior rather than merely enabling tracing without verification.
+## Programme Attribution
+
+Completed under **Building Agentic AI Systems**, delivered through **SDAIA Academy**,
+9 August 2026 — 13 August 2026.
+
+**SDAIA Academy GitHub:** https://github.com/SDAIAAcademy
