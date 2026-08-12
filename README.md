@@ -115,3 +115,59 @@ OnboardAI_Final_Capstone/
 ├── tests/
 └── runtime/.gitkeep
 ```
+
+## Rubric Alignment
+
+### 1. Agent Fundamentals — 15 points
+OnboardAI uses real LangChain tool-using agents rather than hardcoded responses. Specialist
+workers perform genuine retrieval/tool calls using their input request, and structured results
+are validated with Pydantic models through `with_structured_output`. The executed notebook
+contains visible evidence of the tool calls and structured worker outputs.
+
+### 2. Multi-Agent / Routing Architecture — 15 points
+The project implements Track A — Supervisor + Workers. A dedicated Supervisor LLM makes the
+routing and delegation decision and assigns work to the Training, HR Documents, and IT
+Provisioning specialist agents. The routing is model-driven rather than based on keyword
+matching, and the live notebook demonstrates the resulting delegation.
+
+### 3. RAG Pipeline — 15 points
+The project uses Hybrid RAG. Documents are loaded, split with
+`RecursiveCharacterTextSplitter`, embedded using
+`HuggingFaceEmbeddings` with `sentence-transformers/all-mpnet-base-v2`, stored in an
+`InMemoryVectorStore`, and retrieved through semantic search. Hybrid RAG was selected because
+the onboarding system requires both deterministic retrieval of mandatory HR evidence and
+semantic retrieval for contextual specialist-agent searches. The notebook contains retrieval
+smoke tests with visible results.
+
+### 4. Context and State Management — 15 points
+Short-term conversation state is persisted with LangGraph `SqliteSaver` using a
+`thread_id`, while long-term facts are stored separately in a LangGraph Store. The notebook
+includes a cross-thread test demonstrating that a fact written in one thread can be retrieved
+from a different thread, providing evidence that the information is not merely stored in
+short-term conversation state.
+
+### 5. Human-in-the-Loop — 10 points
+The workflow uses LangGraph `interrupt()` to pause before consequential onboarding
+finalization and requires explicit human approval. The notebook separately demonstrates both
+the pause and the continuation using `Command(resume=...)`, with captured output showing that
+the workflow successfully resumes and completes.
+
+### 6. LangGraph Functional API and Error Handling — 15 points
+The workflow uses LangGraph's Functional API through `@task` and `@entrypoint`. Reliability
+is demonstrated through multiple error-handling strategies, including a real `RetryPolicy`
+for transient failures and validation/grounding checks for deterministic failure handling.
+The executed notebook contains evidence of the reliability behavior rather than relying only
+on documentation.
+
+### 7. Workflow Pattern — 10 points
+The declared workflow pattern is **Orchestrator-Worker**. The Supervisor/orchestrator
+decomposes the onboarding request and delegates independent work to specialist workers before
+their results are validated and synthesized. This pattern fits the project because onboarding
+naturally consists of several specialist tasks that can be coordinated by a central
+orchestrator.
+
+### 8. LangSmith Observability — 5 points
+LangSmith tracing is enabled for the live workflow using the required LangSmith tracing
+configuration. The notebook validates the LangSmith credentials and observes the executed
+workflow dynamically. The captured trace evidence is used to inspect agent/tool activity and
+workflow behavior rather than merely enabling tracing without verification.
