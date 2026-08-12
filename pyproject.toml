@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onboardai"
+version = "0.1.0"
+description = "Human-supervised multi-agent HR onboarding capstone built with LangChain and LangGraph"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "email-validator>=2.2,<3",
+  "jinja2>=3.1,<4",
+  "langchain>=1.1,<2",
+  "langchain-groq>=1.0,<2",
+  "langchain-huggingface>=1.0,<2",
+  "langchain-text-splitters>=1.0,<2",
+  "langgraph>=1.0,<2",
+  "langgraph-checkpoint-sqlite>=3.0,<4",
+  "langsmith>=0.4,<1",
+  "pydantic>=2.11,<3",
+  "python-dotenv>=1.1,<2",
+  "sentence-transformers>=5.0,<6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.4,<10", "ruff>=0.12,<1"]
+
+[project.scripts]
+onboardai = "onboardai.demo:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
