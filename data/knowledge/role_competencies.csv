@@ -1,5 +1,0 @@
-role,department,required_skills,standard_access,privileged_access
-Software Engineer,Engineering,"Python; Git; APIs; testing; Docker fundamentals","email; identity; GitHub; issue tracker","VPN"
-HR Specialist,People,"HR policy; employee relations; document management; data privacy","email; identity; HR knowledge base","HRIS"
-Financial Analyst,Finance,"financial modelling; spreadsheets; reporting; data privacy","email; identity; finance reporting","finance system; payroll data"
-
