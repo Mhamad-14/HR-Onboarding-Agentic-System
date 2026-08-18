@@ -83,15 +83,19 @@ def case_status(
     thread_id: str,
     service: ServiceDependency,
 ) -> ResumeResponse:
-    """Return the current paused state of a thread.
+    """Return the current state of a thread without resuming it.
 
-    The workflow is a pull-based entrypoint: it only produces output when invoked.
-    For a thread paused at an interrupt, invoking it with no resume value replays
-    the same interrupt, which lets the dashboard refresh the approval screen.
+    For a thread paused at an interrupt this returns the pending interruption
+    payload (same shape as the submit response) so the dashboard can refresh the
+    approval screen. For a completed thread it returns the last interruption
+    payload from the checkpoint history. The thread is never resumed here, so
+    polling this endpoint cannot accidentally approve or re-run a case.
     """
 
     try:
-        return service.resume_case(thread_id, {})
+        return service.case_status(thread_id)
+    except CaseNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except WorkflowExecutionError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 

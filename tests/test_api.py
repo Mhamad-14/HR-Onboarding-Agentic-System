@@ -251,3 +251,83 @@ def test_submit_rejects_invalid_request_payload(client):
         json={"request": payload, "thread_id": "api-invalid-007"},
     )
     assert response.status_code == 422
+
+
+
+def test_case_status_returns_pending_interrupt_without_resuming(client):
+    thread_id = "api-status-008"
+    body = _submit(client, thread_id)
+    assert body["interrupt"]["type"] == "human_approval"
+
+    response = client.get(f"/api/cases/{thread_id}")
+    assert response.status_code == 200
+    result = response.json()
+
+    # Same shape as the submit response, including the full approval payload.
+    assert result["thread_id"] == thread_id
+    assert result["outcome"] is None
+    assert result["interrupt"]["type"] == "human_approval"
+    value = result["interrupt"]["value"]
+    assert value["case_id"] == "CASE-ENG-001"
+    assert "summary" in value["synthesis"]
+    assert value["synthesis"]["completed_workers"] == [
+        "training",
+        "hr_documents",
+        "it_provisioning",
+    ]
+    assert value["risk_flags"] == [
+        "Privileged access requires additional human approval: VPN"
+    ]
+    assert len(value["draft_paths"]) == 2
+
+
+def test_case_status_is_non_mutating_and_can_be_polled(client):
+    thread_id = "api-status-poll-009"
+    _submit(client, thread_id)
+
+    # Polling the status endpoint must not approve the case or change state.
+    for _ in range(3):
+        response = client.get(f"/api/cases/{thread_id}")
+        assert response.status_code == 200
+        assert response.json()["interrupt"]["type"] == "human_approval"
+
+    # The case is still paused and can still be approved exactly once.
+    approval = {
+        "approved": True,
+        "reviewer": "API Test Reviewer",
+        "comments": "Approved after status polling.",
+        "approved_actions": ["training", "hr_documents", "it_provisioning"],
+    }
+    resumed = client.post(
+        f"/api/cases/{thread_id}/resume",
+        json={"value": approval},
+    )
+    assert resumed.status_code == 200
+    assert resumed.json()["outcome"]["status"] == "completed"
+
+
+def test_case_status_after_completion_returns_last_interrupt(client):
+    thread_id = "api-status-done-010"
+    _submit(client, thread_id)
+    approval = {
+        "approved": True,
+        "reviewer": "API Test Reviewer",
+        "comments": "Approved before status check.",
+        "approved_actions": ["training", "hr_documents", "it_provisioning"],
+    }
+    completed = client.post(
+        f"/api/cases/{thread_id}/resume",
+        json={"value": approval},
+    )
+    assert completed.json()["outcome"]["status"] == "completed"
+
+    response = client.get(f"/api/cases/{thread_id}")
+    assert response.status_code == 200
+    result = response.json()
+    assert result["interrupt"]["type"] == "human_approval"
+    assert result["interrupt"]["value"]["case_id"] == "CASE-ENG-001"
+
+
+def test_case_status_unknown_thread_returns_404(client):
+    response = client.get("/api/cases/does-not-exist")
+    assert response.status_code == 404
