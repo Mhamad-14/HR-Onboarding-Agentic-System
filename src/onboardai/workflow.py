@@ -281,6 +281,10 @@ def build_onboarding_workflow(services: AppServices, checkpointer: Any):
                 "case_id": request.case_id,
                 "employee_id": request.employee_id,
                 "message": "Review drafts and proposed actions before approval.",
+                  "worker_results": {
+                       name: WorkerResult.model_validate(value).model_dump(mode="json")
+                       for name, value in results.items()
+                },
                 "proposed_actions": request.requested_actions,
                 "risk_flags": risk_flags,
                 "synthesis": synthesis.model_dump(mode="json"),

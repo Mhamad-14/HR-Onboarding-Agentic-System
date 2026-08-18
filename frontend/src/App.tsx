@@ -60,7 +60,9 @@ export default function App() {
   const phase = phaseOf(response)
   const showApproval = Boolean(threadId) && phase === 'human_approval'
   const showMissing = Boolean(threadId) && phase === 'missing_information'
-  const workerResults = response?.outcome?.worker_results ?? null
+  const workerResults = response?.outcome?.worker_results ??
+                        response?.interrupt?.value?.worker_results ??
+                        null
 
   return (
     <div className="app-shell">
@@ -99,6 +101,11 @@ export default function App() {
 
           <div className="stack">
             <CaseDetail threadId={threadId} response={response} />
+            {workerResults ? (
+              <WorkerResults workerResults={workerResults} threadId={threadId ?? ''} />
+            ) : (
+              <WorkerResults workerResults={{}} threadId={threadId ?? ''} />
+            )}
 
             {showApproval && threadId ? (
               <ApprovalStep
@@ -115,11 +122,7 @@ export default function App() {
               />
             ) : null}
 
-            {workerResults ? (
-              <WorkerResults workerResults={workerResults} threadId={threadId ?? ''} />
-            ) : (
-              <WorkerResults workerResults={{}} threadId={threadId ?? ''} />
-            )}
+            
           </div>
         </div>
       </main>
