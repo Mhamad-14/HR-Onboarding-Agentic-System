@@ -11,9 +11,9 @@ import type {
 /**
  * Thin client for the OnboardAI FastAPI backend.
  *
- * In development the Vite server proxies /api to http://127.0.0.1:8001.
+ * In development the Vite server proxies /api to http://127.0.0.1:8002.
  * For a production build, set VITE_API_BASE_URL to the backend origin
- * (for example http://127.0.0.1:8001) and the backend must allow the
+ * (for example http://127.0.0.1:8002) and the backend must allow the
  * dashboard origin via CORS.
  */
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''

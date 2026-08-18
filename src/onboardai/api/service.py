@@ -143,6 +143,8 @@ class OnboardAIService:
             ) from exc
 
         interrupt_value, outcome = _case_payload(result)
+        if outcome is not None:
+            self._thread_meta.setdefault(thread_id, {})["outcome"] = outcome
         if interrupt_value is not None:
             return ResumeResponse(
                 thread_id=thread_id,
@@ -165,23 +167,27 @@ class OnboardAIService:
             return self._resume(thread_id, resume_value)
 
     def case_status(self, thread_id: str) -> ResumeResponse:
-        """Return the current state of a thread without resuming or mutating it.
-
-        A functional-API entrypoint only produces output when invoked, so a paused
-        thread has no final outcome yet. The pending interrupt payload is recovered
-        from the checkpoint history (the same payload the submit/resume calls return)
-        so the dashboard can refresh the approval screen repeatedly.
-        """
+        """Return the current state of a thread without resuming or mutating it."""
 
         config = self._config(thread_id)
         state = self.app.workflow.get_state(config)
+
+        final_outcome = self._thread_meta.get(thread_id, {}).get("outcome")
+        if not state.interrupts and final_outcome is not None:
+            return ResumeResponse(
+                thread_id=thread_id,
+                outcome=final_outcome,
+            )
+
         if state.interrupts:
             interrupt_value = state.interrupts[0].value
+
             if not isinstance(interrupt_value, dict):
                 raise WorkflowExecutionError(
-                    f"Unexpected interrupt value of type {type(interrupt_value).__name__}; "
-                    "expected a dict"
+                    f"Unexpected interrupt value of type "
+                    f"{type(interrupt_value).__name__}; expected a dict"
                 )
+
             return ResumeResponse(
                 thread_id=thread_id,
                 interrupt=InterruptPayload(
@@ -190,15 +196,15 @@ class OnboardAIService:
                 ),
             )
 
-        # The thread finished. The functional-API checkpoint no longer exposes the
-        # final outcome, so fall back to the most recent interrupt payload from the
-        # checkpoint history; that is what the dashboard shows for a completed case.
         for snapshot in self.app.workflow.get_state_history(config, limit=50):
             if not snapshot.interrupts:
                 continue
+
             interrupt_value = snapshot.interrupts[0].value
+
             if not isinstance(interrupt_value, dict):
                 continue
+
             return ResumeResponse(
                 thread_id=thread_id,
                 interrupt=InterruptPayload(
@@ -207,7 +213,9 @@ class OnboardAIService:
                 ),
             )
 
-        raise CaseNotFoundError(f"No workflow state found for thread {thread_id!r}")
+        raise CaseNotFoundError(
+            f"No workflow state found for thread {thread_id!r}"
+        )
 
     def thread_case_id(self, thread_id: str) -> str:
         """Return the case_id recorded for this thread.
