@@ -1,10 +1,15 @@
 # OnboardAI — Human-Supervised HR Onboarding Orchestrator
 
 **Team:** Aleen Alfawzan · Fadwa Nasser Aldukhi · Reem Almehize · Noura Almuqbil · Moudi Alhomoud
+
 **Training programme:** Building Agentic AI Systems — SDAIA Academy  
+
 **Cohort/session dates:** 9 August 2026 — 13 August 2026  
+
 **Declared capstone track:** **Track A — Supervisor + Workers**  
+
 **Named workflow pattern:** **Orchestrator-Worker**  
+
 **RAG architecture:** **Hybrid RAG**
 
 OnboardAI is a human-supervised, post-hire onboarding system. A dedicated HR Supervisor LLM
